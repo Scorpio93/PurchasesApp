@@ -1,3 +1,9 @@
 {
-  "main_header": "Purposes"
+  "main_header": "Purposes",
+  "name": "Name",
+  "description": "Description",
+  "price": "Price",
+  "save": "Save",
+  "cancel": "Cancel",
+  "new_purchase": "New purchase"
 }

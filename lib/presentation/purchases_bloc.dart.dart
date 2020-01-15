@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:purchases/domain/entities/purchase.dart';
 import 'package:purchases/domain/usecases/purchases_usecase.dart';
 import 'package:purchases/presentation/purchases_state.dart';
 
 abstract class PurchasesBloc<Purchase, PurchasesState> {
   void loadPurchases();
-  void addNewItem(Purchase purchase);
   void dispose();
 }
 
@@ -29,12 +26,6 @@ class PurchasesBlocImpl extends PurchasesBloc {
           (success) => _purchasesStreamController.sink.add(PurchasesState.purchasesData(success))
       );
     });
-  }
-
-  @override
-  void addNewItem(purchase) {
-    usecase.addNewPurchase(Purchase(description: "description", isBought: 1, name: "Name", price: 34)
-    ).then((isAdded) { loadPurchases(); });
   }
 
   @override

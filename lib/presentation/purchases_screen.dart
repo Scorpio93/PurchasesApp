@@ -4,7 +4,6 @@ import 'package:purchases/domain/entities/purchase.dart';
 import 'package:purchases/presentation/purchases_bloc.dart.dart';
 import 'package:purchases/dependencies_container.dart';
 import 'package:purchases/presentation/purchases_state.dart';
-
 import '../app.localization.dart';
 
 class PurchasesScreen extends StatefulWidget {
@@ -136,17 +135,43 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
         alignment: Alignment.center,
         child: new FloatingActionButton(
           onPressed: () {
-            _purchasesBloc.addNewItem(Purchase(
-                id: 1,
-                description: "Description",
-                price: 12,
-                isBought: 1,
-                name: "Name"));
-          },
-          child: new Icon(Icons.add),
-        ),
-      ),
+            _showDialog();
+          }, child: new Icon(Icons.add),)
+      )
     );
+  }
+
+  void _showDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(AppLocalizations.of(context).translate("new_purchase")),
+          content: _buildDialogBody(context),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text(AppLocalizations.of(context).translate("cancel")),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(onPressed: (){
+              
+            }, child: new Text(AppLocalizations.of(context).translate("save")))
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDialogBody(BuildContext context) {
+    return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      PurchaseTextField(hintText: AppLocalizations.of(context).translate("name")),
+      PurchaseTextField(hintText: AppLocalizations.of(context).translate("price")),
+      PurchaseTextField(hintText: AppLocalizations.of(context).translate("description"))
+    ]);
   }
 
   Widget _buildLoading() {
@@ -162,3 +187,19 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
     super.dispose();
   }
 }
+
+class PurchaseTextField extends StatelessWidget {
+  String hintText;
+
+  PurchaseTextField({@required this.hintText});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      decoration: InputDecoration(
+          hintText: hintText
+      ),
+    );
+  }
+}
+
