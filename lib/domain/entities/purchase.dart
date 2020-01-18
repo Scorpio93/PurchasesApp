@@ -11,7 +11,7 @@ String toJson(Purchase data) => json.encode(data.toJson());
 class Purchase extends Equatable {
   final int id;
   final String name;
-  final int price;
+  final String price;
   final String description;
   final int isBought;
 

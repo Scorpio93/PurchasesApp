@@ -17,6 +17,10 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
   PurchasesBlocImpl _purchasesBloc;
   ScrollController _scrollController;
 
+  final TextEditingController _nameController = new TextEditingController();
+  final TextEditingController _priceController = new TextEditingController();
+  final TextEditingController _descriptionController = new TextEditingController();
+
   @override
   void initState() {
     _purchasesBloc = serviceLocator<PurchasesBlocImpl>();
@@ -90,18 +94,20 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
     return ListTile(
         title: new Card(
             child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: new Column(
-            children: <Widget>[
-                new Row(children: <Widget>[
-                  Expanded(
-                    child: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                            new Text(purchase.name, style: TextStyle(fontWeight: FontWeight.bold)),
-                            new Text(purchase.description, style: TextStyle(color: Colors.grey[500]))
-                        ])),
-                  new Text(purchase.price.toString())
+      padding: EdgeInsets.all(16.0),
+      child: new Column(
+        children: <Widget>[
+          new Row(children: <Widget>[
+            Expanded(
+                child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                  new Text(purchase.name,
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  new Text(purchase.description,
+                      style: TextStyle(color: Colors.grey[500]))
+                ])),
+            new Text(purchase.price.toString())
           ])
         ],
       ),
@@ -128,17 +134,17 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
     }
 
     return new Positioned(
-      top: top,
-      right: 16.0,
-      child: new Transform(
-        transform: new Matrix4.identity()..scale(scale),
-        alignment: Alignment.center,
-        child: new FloatingActionButton(
-          onPressed: () {
-            _showDialog();
-          }, child: new Icon(Icons.add),)
-      )
-    );
+        top: top,
+        right: 16.0,
+        child: new Transform(
+            transform: new Matrix4.identity()..scale(scale),
+            alignment: Alignment.center,
+            child: new FloatingActionButton(
+              onPressed: () {
+                _showDialog();
+              },
+              child: new Icon(Icons.add),
+            )));
   }
 
   void _showDialog() {
@@ -147,7 +153,8 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text(AppLocalizations.of(context).translate("new_purchase")),
+          title:
+              new Text(AppLocalizations.of(context).translate("new_purchase")),
           content: _buildDialogBody(context),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
@@ -157,9 +164,16 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
                 Navigator.of(context).pop();
               },
             ),
-            new FlatButton(onPressed: (){
-              
-            }, child: new Text(AppLocalizations.of(context).translate("save")))
+            new FlatButton(
+                onPressed: () {
+                  _purchasesBloc.addNewItem(Purchase(
+                      description: _descriptionController.text,
+                      isBought: 0,
+                      name: _nameController.text,
+                      price: _priceController.text));
+                  Navigator.of(context).pop();
+                },
+                child: new Text(AppLocalizations.of(context).translate("save")))
           ],
         );
       },
@@ -168,9 +182,15 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
 
   Widget _buildDialogBody(BuildContext context) {
     return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-      PurchaseTextField(hintText: AppLocalizations.of(context).translate("name")),
-      PurchaseTextField(hintText: AppLocalizations.of(context).translate("price")),
-      PurchaseTextField(hintText: AppLocalizations.of(context).translate("description"))
+      PurchaseTextField(
+          hintText: AppLocalizations.of(context).translate("name"),
+          textEditingController: _nameController),
+      PurchaseTextField(
+          hintText: AppLocalizations.of(context).translate("price"),
+          textEditingController: _priceController),
+      PurchaseTextField(
+          hintText: AppLocalizations.of(context).translate("description"),
+          textEditingController: _descriptionController)
     ]);
   }
 
@@ -184,22 +204,25 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
   void dispose() {
     _purchasesBloc.dispose();
     _scrollController.dispose();
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 }
 
 class PurchaseTextField extends StatelessWidget {
   String hintText;
+  TextEditingController textEditingController;
 
-  PurchaseTextField({@required this.hintText});
+  PurchaseTextField(
+      {@required this.hintText, @required this.textEditingController});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      decoration: InputDecoration(
-          hintText: hintText
-      ),
+      controller: textEditingController,
+      decoration: InputDecoration(hintText: hintText),
     );
   }
 }
-
